@@ -10,4 +10,6 @@ public interface StorageLink {
     void save(Link link);
 
     void update(Link link);
+
+    boolean existKey();
 }

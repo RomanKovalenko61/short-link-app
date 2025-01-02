@@ -1,11 +1,15 @@
 package ru.kovalenko.Model;
 
-import java.util.List;
 import java.util.UUID;
 
 public class User {
-    public UUID uuid;
-    public String login;
-    public String password;
-    public List<Link> myLinks;
+    private final UUID uuid;
+
+    public User() {
+        this.uuid = UUID.randomUUID();
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 }

@@ -2,12 +2,11 @@ package ru.kovalenko.Storage;
 
 import ru.kovalenko.Model.User;
 
+import java.util.UUID;
+
 public interface StorageUser {
-    User get(String login, String password);
 
     void save(User user);
 
-    void update(User user);
-
-    void delete(User user);
+    boolean checkExistKey(UUID uuid);
 }
