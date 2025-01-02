@@ -1,4 +1,4 @@
-package ru.kovalenko;
+package ru.kovalenko.Utils;
 
 import java.util.Random;
 
