@@ -10,9 +10,7 @@ public class MapLinkStorage implements StorageLink {
 
     @Override
     public Link get(String shortLink) {
-        Link link = links.get(shortLink);
-        System.out.println(link);
-        return link;
+        return links.get(shortLink);
     }
 
     @Override

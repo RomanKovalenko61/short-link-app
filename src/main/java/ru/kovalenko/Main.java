@@ -26,7 +26,7 @@ public class Main {
         UUID uuid = null;
         while (true) {
             System.out.println("Введите одну из команд");
-            System.out.println("help | login uuid | create link lifetime | go shortLink | update shortLink transitionLimit | delete shortLink | inspect shortLink OR all | exit ");
+            System.out.println("help | login uuid | logout | create link lifetime | go shortLink | update shortLink transitionLimit | delete shortLink | inspect shortLink OR all | exit ");
             String[] params = reader.readLine().trim().split(" ");
             if (params.length < 1 || params.length > 3) {
                 System.out.println("Неверная команда. Введите команду help для получения подробной справки");
@@ -60,6 +60,9 @@ public class Main {
                     } catch (IllegalArgumentException ex) {
                         System.out.println("Неправильный формат UUID " + params[1]);
                     }
+                    break;
+                case "logout":
+                    uuid = null;
                     break;
                 case "create":
                     if (uuid == null) {
@@ -102,7 +105,11 @@ public class Main {
                         System.err.println("Ошибка доступа: UUID is null");
                     }
                     Link toInspect = links.get(params[1]);
-                    System.out.println(toInspect);
+                    if (toInspect != null && toInspect.getOwner().equals(uuid)) {
+                        System.out.println(toInspect);
+                    } else {
+                        System.err.println("Короткая ссылка не найдена" + params[1]);
+                    }
                     break;
                 case "exit":
                     return;
