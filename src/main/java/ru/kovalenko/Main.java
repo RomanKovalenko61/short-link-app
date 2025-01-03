@@ -21,9 +21,13 @@ public class Main {
     private final static StorageUser users = new MapUserStorage();
     private final static StorageLink links = new MapLinkStorage();
 
+    private final static Config CONFIG = Config.getInstance();
+
     public static void main(String[] args) throws IOException, URISyntaxException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         UUID uuid = null;
+        String name = CONFIG.getAppName();
+        System.out.println(name);
         while (true) {
             System.out.println("Введите одну из команд");
             System.out.println("help | login uuid | logout | create link lifetime | go shortLink | update shortLink transitionLimit | delete shortLink | inspect shortLink OR all | exit ");
@@ -119,5 +123,4 @@ public class Main {
             }
         }
     }
-
 }
