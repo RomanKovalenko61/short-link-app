@@ -11,5 +11,5 @@ public interface StorageLink {
 
     void update(Link link);
 
-    boolean existKey();
+    boolean existsKey(String shortLink);
 }

@@ -8,5 +8,5 @@ public interface StorageUser {
 
     void save(User user);
 
-    boolean checkExistKey(UUID uuid);
+    boolean existsKey(UUID uuid);
 }
