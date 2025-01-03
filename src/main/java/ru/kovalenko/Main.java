@@ -79,7 +79,8 @@ public class Main {
                     do {
                         shortLink = GeneratorShortLink.generate();
                     } while (links.existsKey(shortLink));
-                    Link link = new Link(params[1], shortLink, uuid, LocalDateTime.now().plusDays(1), 10);
+                    Link link = new Link(params[1], shortLink, uuid,
+                            LocalDateTime.now().plusSeconds(CONFIG.getLIFETIME()), CONFIG.getTRANSITION_COUNT());
                     links.save(link);
                     System.out.println("Created short " + shortLink + " site: " + params[1]);
                     break;

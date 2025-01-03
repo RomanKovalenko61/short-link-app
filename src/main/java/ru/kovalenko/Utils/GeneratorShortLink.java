@@ -1,9 +1,11 @@
 package ru.kovalenko.Utils;
 
+import ru.kovalenko.Config;
+
 import java.util.Random;
 
 public class GeneratorShortLink {
-    public static int GEN_LENGTH = 6;
+    public static int GEN_LENGTH = Config.getInstance().getGENERATE_LENGTH();
     public static final String SEQUENCE;
 
     static {
