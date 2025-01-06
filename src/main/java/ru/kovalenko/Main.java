@@ -34,29 +34,13 @@ public class Main {
             System.out.println("---------------------------");
             System.out.println("Ваш uuid в системе: " + uuid);
             System.out.println("Введите одну из команд");
-            System.out.println("help | login uuid | logout | create link lifetime | go shortLink | update shortLink transitionLimit | delete shortLink | inspect shortLink | getlinks | getusers | exit ");
+            System.out.println("login uuid | logout | create link lifetime | go shortLink | update shortLink transitionLimit | delete shortLink | inspect shortLink | getlinks | getusers | exit ");
             String[] params = reader.readLine().trim().split(" ");
             if (params.length < 1 || params.length > 3) {
-                System.out.println("Неверная команда. Введите команду help для получения подробной справки");
+                System.out.println("Неверная команда");
                 continue;
             }
             switch (params[0].toLowerCase()) {
-                case "help":
-                    System.out.println("Справка по работе с программой");
-                    System.out.println("Для работы нужно иметь uuid. Если он известен, то необходимо его ввести");
-                    System.out.println("Пример: login e52232e1-0ded-4587-999f-4dd135a4a94f");
-                    System.out.println("Или создайте короткую ссылку и uuid вам присвоят автоматически. Сохраните его для следующих запусков программы");
-                    System.out.println("Пример: create https://ru.stackoverflow.com [срок жизни ссылки в секундах] Срок не обязательный параметр");
-                    System.out.println("Для перехода по короткой ссылке используйте команду go clck.ru/3DZHeG");
-                    System.out.println("Система проверит принадлежит ли она вам. Если да, то будет осуществлен переход по ссылке при условии, что:");
-                    System.out.println("ссылка не просрочена по времени или не исчерпан лимит переходов, иначе переход не произойдет");
-                    System.out.println("Для обновления параметров ссылки используете команду update clck.ru/3DZHeG [15] (установить лимит переходов равный 15) ");
-                    System.out.println("Для удаления ссылки используете команду delete clck.ru/3DZHeG");
-                    System.out.println("Для просмотра информации о ссылке используете команду inspect clck.ru/3DZHeG");
-                    System.out.println("Для просмотра списка ваших ссылок используете команду getlinks");
-                    System.out.println("Для просмотра списка uuid зарегистрированных в системе используете команду getusers");
-                    System.out.println("Для выхода из программы введите exit");
-                    break;
                 case "login":
                     try {
                         UUID checkUUID = UUID.fromString(params[1]);
