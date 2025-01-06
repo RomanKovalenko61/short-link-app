@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class Main {
     private final static StorageUser users = new MapUserStorage();
@@ -34,7 +35,7 @@ public class Main {
             System.out.println("Ваш uuid в системе: " + uuid);
             System.out.println("Введите одну из команд");
             System.out.println("help | login uuid | logout | create link lifetime | go shortLink | update shortLink transitionLimit | delete shortLink | inspect shortLink | getlinks | getusers | exit ");
-            java.lang.String[] params = reader.readLine().trim().split(" ");
+            String[] params = reader.readLine().trim().split(" ");
             if (params.length < 1 || params.length > 3) {
                 System.out.println("Неверная команда. Введите команду help для получения подробной справки");
                 continue;
@@ -80,7 +81,7 @@ public class Main {
                         uuid = newUser.getUuid();
                         System.out.println("Создан uuid для работы с программой " + uuid);
                     }
-                    java.lang.String shortLink;
+                    String shortLink;
                     do {
                         shortLink = GeneratorShortLink.generate();
                     } while (links.existsKey(shortLink));
@@ -97,29 +98,24 @@ public class Main {
                     } else {
                         lifetime = CONFIG.getLIFETIME();
                     }
-                    Link link = new Link(params[1], shortLink, uuid,
+                    Link newLink = new Link(params[1], shortLink, uuid,
                             LocalDateTime.now().plusSeconds(lifetime), CONFIG.getTRANSITION_COUNT());
-                    links.save(link);
+                    links.save(newLink);
                     System.out.println("Создана короткая ссылка: " + shortLink + " для сайта: " + params[1]);
                     break;
                 case "go":
-                    if (uuid == null) {
-                        System.err.println("Ошибка доступа: UUID is null");
-                        break;
-                    }
-                    Link to = null;
-                    if (links.existsKey(params[1])) {
-                        to = links.get(params[1]);
-                    } else {
-                        System.err.println("Ссылка не найдена");
-                        break;
-                    }
-                    if (uuid.equals(to.getOwner())) {
-                        boolean checkLimitTransition = to.getTransitionCount() <= Math.max(to.getTransitionLimit(), CONFIG.getTRANSITION_COUNT());
-                        boolean checkTime = to.getExpired().isAfter(LocalDateTime.now());
+                    doAction(uuid, params[1], transitionLink -> {
+                        boolean checkLimitTransition = transitionLink.getTransitionCount() <=
+                                Math.max(transitionLink.getTransitionLimit(), CONFIG.getTRANSITION_COUNT());
+                        boolean checkTime = transitionLink.getExpired().isAfter(LocalDateTime.now());
                         if (checkTime && checkLimitTransition) {
-                            to.increaseTransitionCount();
-                            Desktop.getDesktop().browse(new URI(to.getUrl()));
+                            try {
+                                Desktop.getDesktop().browse(new URI(transitionLink.getUrl()));
+                                transitionLink.increaseTransitionCount();
+                                System.out.println("Переход выполнен успешно");
+                            } catch (IOException | URISyntaxException e) {
+                                System.err.println("Что-то пошло не так при переходе по ссылке");
+                            }
                         }
                         if (!checkLimitTransition) {
                             System.err.println("Исчерпан лимит переходов");
@@ -128,47 +124,30 @@ public class Main {
                             System.err.println("Время жизни ссылки истекло. Она будет удалена из системы");
                             links.delete(params[1]);
                         }
-                    } else {
-                        System.err.println("Ошибка доступа: такая ссылка не найдена");
-                    }
+                    });
                     break;
                 case "update":
-                    if (uuid == null) {
-                        System.err.println("Ошибка доступа: UUID is null");
-                    }
-                    Link update = links.get(params[1]);
-                    if (uuid.equals(update.getOwner())) {
+                    doAction(uuid, params[1], updateLink -> {
                         try {
                             int limitFromConsole = Integer.parseInt(params[2]);
                             if (limitFromConsole < 0) {
                                 throw new NumberFormatException("Введено отрицательное число");
                             }
-                            update.setTransitionLimit(limitFromConsole);
+                            updateLink.setTransitionLimit(limitFromConsole);
+                            System.out.println("Обновлено: " + updateLink);
                         } catch (NumberFormatException e) {
-                            System.err.println("Неверно введен лимит переходов по ссылке" + e);
+                            System.err.println("Неверно введен лимит переходов по ссылке " + e);
                         }
-                    }
+                    });
                     break;
                 case "delete":
-                    if (uuid == null) {
-                        System.err.println("Ошибка доступа: UUID is null");
-                    }
-                    Link toDelete = links.get(params[1]);
-                    if (uuid.equals(toDelete.getOwner())) {
-                        links.delete(params[1]);
-                    }
+                    doAction(uuid, params[1], deleteLink -> {
+                        links.delete(deleteLink.getShortLink());
+                        System.out.println("Ссылка была удалена");
+                    });
                     break;
                 case "inspect":
-                    if (uuid == null) {
-                        System.err.println("Ошибка доступа: UUID is null");
-                        break;
-                    }
-                    Link toInspect = links.get(params[1]);
-                    if (toInspect != null && toInspect.getOwner().equals(uuid)) {
-                        System.out.println(toInspect);
-                    } else {
-                        System.err.println("Короткая ссылка не найдена " + params[1]);
-                    }
+                    doAction(uuid, params[1], System.out::println);
                     break;
                 case "getlinks":
                     if (uuid == null) {
@@ -176,10 +155,16 @@ public class Main {
                         break;
                     }
                     List<Link> myLink = links.getAll(uuid);
+                    if (myLink.isEmpty()) {
+                        System.out.println("Не найдено коротких ссылок");
+                    }
                     myLink.forEach(System.out::println);
                     break;
                 case "getusers":
                     List<String> allUUID = users.getUsers();
+                    if (allUUID.isEmpty()) {
+                        System.out.println("Упс..все пользователи системы куда-то пропали...");
+                    }
                     allUUID.forEach(System.out::println);
                     break;
                 case "exit":
@@ -189,5 +174,23 @@ public class Main {
                     break;
             }
         }
+    }
+
+    private static boolean doAction(UUID uuid, String shortLink, Consumer<Link> consumer) {
+        if (uuid == null) {
+            System.err.println("Ошибка доступа: UUID is null");
+            return false;
+        }
+        if (!links.existsKey(shortLink)) {
+            System.err.println("Ошибка доступа: такой короткой ссылки нет");
+            return false;
+        }
+        Link link = links.get(shortLink);
+        if (!link.getOwner().equals(uuid)) {
+            System.err.println("Ошибка доступа: UUID не соответствует");
+            return false;
+        }
+        consumer.accept(link);
+        return true;
     }
 }
