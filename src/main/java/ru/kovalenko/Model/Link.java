@@ -6,12 +6,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Link implements Serializable {
-    public String url;
-    public String shortLink;
-    public UUID owner;
-    public LocalDateTime expired;
-    public int transitionCount = 0;
-    public int transitionLimit;
+    private final String url;
+    private final String shortLink;
+    private final UUID owner;
+    private final LocalDateTime expired;
+    private int transitionCount = 0;
+    private int transitionLimit;
 
     public Link(String url, String shortLink, UUID owner, LocalDateTime expired, int transitionLimit) {
         this.url = url;
@@ -33,6 +33,26 @@ public class Link implements Serializable {
         return owner;
     }
 
+    public void setTransitionLimit(int transitionLimit) {
+        this.transitionLimit = transitionLimit;
+    }
+
+    public LocalDateTime getExpired() {
+        return expired;
+    }
+
+    public int getTransitionCount() {
+        return transitionCount;
+    }
+
+    public void increaseTransitionCount() {
+        transitionCount++;
+    }
+
+    public int getTransitionLimit() {
+        return transitionLimit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -48,13 +68,12 @@ public class Link implements Serializable {
 
     @Override
     public String toString() {
-        return "Link{" +
-                "url='" + url + '\'' +
-                ", shortLink='" + shortLink + '\'' +
-                ", owner=" + owner +
-                ", expired=" + expired +
-                ", transitionCount=" + transitionCount +
-                ", transitionLimit=" + transitionLimit +
+        return "Адрес : " + url +
+                ", короткая ссылка " + shortLink +
+                ", владелец : " + owner +
+                ", Время жизни до : " + expired +
+                ", Количество переходов : " + transitionCount +
+                ", Лимит переходов : " + transitionLimit +
                 '}';
     }
 }
