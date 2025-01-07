@@ -1,11 +1,23 @@
 package ru.kovalenko.Storage;
 
 import ru.kovalenko.Model.Link;
+import ru.kovalenko.Utils.GsonLoader;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class MapLinkStorage implements StorageLink {
-    private final Map<String, Link> links = new HashMap<>();
+    private Map<String, Link> links;
+
+    {
+        try {
+            links = GsonLoader.loadLinks();
+        } catch (Exception e) {
+            System.err.println("Не удалось загрузить список ссылок");
+        }
+    }
 
     @Override
     public Link get(String shortLink) {
@@ -41,6 +53,10 @@ public class MapLinkStorage implements StorageLink {
     @Override
     public boolean existsKey(String shortLink) {
         return links.containsKey(shortLink);
+    }
+
+    public Map<String, Link> getMapLinks() {
+        return links;
     }
 
     @Override

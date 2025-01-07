@@ -7,6 +7,7 @@ import ru.kovalenko.Storage.MapUserStorage;
 import ru.kovalenko.Storage.StorageLink;
 import ru.kovalenko.Storage.StorageUser;
 import ru.kovalenko.Utils.GeneratorShortLink;
+import ru.kovalenko.Utils.GsonLoader;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -25,11 +26,9 @@ public class Main {
 
     private final static Config CONFIG = Config.getInstance();
 
-    public static void main(java.lang.String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         UUID uuid = null;
-        java.lang.String name = CONFIG.getAppName();
-        System.out.println(name);
         while (true) {
             System.out.println("---------------------------");
             System.out.println("Ваш uuid в системе: " + uuid);
@@ -141,17 +140,21 @@ public class Main {
                     List<Link> myLink = links.getAll(uuid);
                     if (myLink.isEmpty()) {
                         System.out.println("Не найдено коротких ссылок");
+                    } else {
+                        myLink.forEach(System.out::println);
                     }
-                    myLink.forEach(System.out::println);
                     break;
                 case "getusers":
                     List<String> allUUID = users.getUsers();
                     if (allUUID.isEmpty()) {
                         System.out.println("Упс..все пользователи системы куда-то пропали...");
+                    } else {
+                        allUUID.forEach(System.out::println);
                     }
-                    allUUID.forEach(System.out::println);
                     break;
                 case "exit":
+                    GsonLoader.saveUsers(((MapUserStorage) users).getMapUsers());
+                    GsonLoader.saveLinks(((MapLinkStorage) links).getMapLinks());
                     return;
                 default:
                     System.out.println("Неверная команда");
