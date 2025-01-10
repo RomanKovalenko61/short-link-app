@@ -9,7 +9,7 @@ import java.util.Properties;
 public class Config {
     protected static final File PROPS = new File("config\\app.properties");
 
-    private final String appName;
+    private final String PREFIX;
 
     private final int GENERATE_LENGTH;
 
@@ -24,7 +24,7 @@ public class Config {
             InputStream is = Files.newInputStream(PROPS.toPath());
             Properties props = new Properties();
             props.load(is);
-            appName = props.getProperty("app");
+            PREFIX = props.getProperty("prefix");
             GENERATE_LENGTH = Integer.parseInt(props.getProperty("generate-length", "6"));
             LIFETIME = Integer.parseInt(props.getProperty("lifetime", "3600"));
             TRANSITION_COUNT = Integer.parseInt(props.getProperty("transition-count", "10"));
@@ -37,8 +37,8 @@ public class Config {
         return INSTANCE;
     }
 
-    public String getAppName() {
-        return appName;
+    public String getPREFIX() {
+        return PREFIX;
     }
 
     public int getGENERATE_LENGTH() {

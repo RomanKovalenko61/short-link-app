@@ -5,8 +5,9 @@ import ru.kovalenko.Config;
 import java.util.Random;
 
 public class GeneratorShortLink {
-    public static int GEN_LENGTH = Config.getInstance().getGENERATE_LENGTH();
-    public static final String SEQUENCE;
+    private static final int GEN_LENGTH = Config.getInstance().getGENERATE_LENGTH();
+    private static final String PREFIX = Config.getInstance().getPREFIX();
+    private static final String SEQUENCE;
 
     static {
         StringBuilder builder = new StringBuilder();
@@ -23,6 +24,7 @@ public class GeneratorShortLink {
     public static String generate() {
         Random random = new Random();
         StringBuilder builder = new StringBuilder();
+        builder.append(PREFIX);
         for (int i = 0; i < GEN_LENGTH; i++) {
             int index = random.nextInt(SEQUENCE.length());
             builder.append(SEQUENCE.charAt(index));
