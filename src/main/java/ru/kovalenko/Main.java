@@ -88,8 +88,8 @@ public class Main {
                     break;
                 case "go":
                     doAction(uuid, params[1], transitionLink -> {
-                        boolean checkLimitTransition = transitionLink.getTransitionCount() <=
-                                Math.max(transitionLink.getTransitionLimit(), CONFIG.getTRANSITION_COUNT());
+                        int maxTransition = Math.max(transitionLink.getTransitionLimit(), CONFIG.getTRANSITION_COUNT());
+                        boolean checkLimitTransition = transitionLink.getTransitionCount() < maxTransition;
                         boolean checkTime = transitionLink.getExpired().isAfter(LocalDateTime.now());
                         if (checkTime && checkLimitTransition) {
                             try {
@@ -101,7 +101,7 @@ public class Main {
                             }
                         }
                         if (!checkLimitTransition) {
-                            System.err.println("Исчерпан лимит переходов");
+                            System.err.println("Исчерпан лимит переходов. Использовано: " + transitionLink.getTransitionLimit());
                         }
                         if (!checkTime) {
                             System.err.println("Время жизни ссылки истекло. Она будет удалена из системы");
