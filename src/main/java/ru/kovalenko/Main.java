@@ -99,14 +99,13 @@ public class Main {
                             } catch (IOException | URISyntaxException e) {
                                 System.err.println("Что-то пошло не так при переходе по ссылке");
                             }
+                        } else if (!checkLimitTransition && checkTime) {
+                            System.err.println("Исчерпан лимит переходов по короткой ссылке");
+                            System.err.println("Вы можете увеличите его при помощи команды: ");
+                            System.err.println("update " + params[1] + " " + transitionLink.getTransitionLimit() * 2);
                         } else {
-                            links.delete(params[1]);
-                        }
-                        if (!checkLimitTransition) {
-                            System.err.println("Исчерпан лимит переходов. Ссылка удалена из системы");
-                        }
-                        if (!checkTime) {
                             System.err.println("Время жизни ссылки истекло. Она удалена из системы");
+                            links.delete(params[1]);
                         }
                     });
                     break;
